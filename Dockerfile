@@ -7,14 +7,6 @@ ENV SCREEN_HEIGHT=1080
 ENV SCREEN_DEPTH=24
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    chromium \
-    chromium-driver \
-    xvfb \
-    fluxbox \
-    x11vnc \
-    novnc \
-    websockify \
-    x11-utils \
     wget \
     unzip \
     ca-certificates \
@@ -25,8 +17,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgbm1 \
     libasound2 \
     procps \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
+
+# Instala Google Chrome
+RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get update \
+    && apt-get install -y ./google-chrome-stable_current_amd64.deb \
+    && rm google-chrome-stable_current_amd64.deb
 
 WORKDIR /workspace
 
