@@ -14,15 +14,15 @@ on:
       browser:
         description: "Browser da execucao"
         required: false
-        default: "edge"
+        default: "chrome"
       parallel_count:
         description: "Quantidade de threads para o DataProvider"
         required: false
         default: "2"
-      headless:
-        description: "Executa os testes em modo headless"
+      execution_mode:
+        description: "Modo de execucao do workflow"
         required: false
-        default: "false"
+        default: "github-hosted-xvfb"
 
 permissions:
   contents: read
@@ -34,7 +34,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests:
+  tests-github-hosted:
+    if: github.event_name == 'push' || github.event.inputs.execution_mode == 'github-hosted-xvfb'
     runs-on: ubuntu-latest
 
     steps:
@@ -48,13 +49,66 @@ jobs:
           java-version: "17"
           cache: maven
 
-      - name: Run automated tests
+      - name: Install Xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Run automated tests with Xvfb
         run: >
+          xvfb-run --server-args="-screen 0 1980x1024x24"
           mvn clean test
+          -DLOG_LEVEL=INFO
           -Dcucumber.filter.tags=${{ github.event.inputs.cucumber_tag || '@AGI' }}
           -Dbrowser=${{ github.event.inputs.browser || 'chrome' }}
           -Ddataproviderthreadcount=${{ github.event.inputs.parallel_count || '2' }}
-          -Dheadless=${{ github.event.inputs.headless || 'false' }}
+          -Dheadless=false
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: target/allure-results
+          if-no-files-found: warn
+
+      - name: Upload Surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
+          if-no-files-found: warn
+
+      - name: Upload execution logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: execution-logs
+          path: logs/*.log
+          if-no-files-found: warn
+
+  tests-self-hosted:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.execution_mode == 'self-hosted-gui'
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Run automated tests with GUI session
+        run: >
+          mvn clean test
+          -DLOG_LEVEL=INFO
+          -Dcucumber.filter.tags=${{ github.event.inputs.cucumber_tag || '@AGI' }}
+          -Dbrowser=${{ github.event.inputs.browser || 'chrome' }}
+          -Ddataproviderthreadcount=${{ github.event.inputs.parallel_count || '2' }}
+          -Dheadless=false
 
       - name: Upload Allure results
         if: always()
@@ -82,7 +136,9 @@ jobs:
 
   deploy-pages:
     if: always()
-    needs: tests
+    needs:
+      - tests-github-hosted
+      - tests-self-hosted
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -121,13 +177,12 @@ jobs:
 
       - name: Prepare GitHub Pages content
         run: |
-          New-Item -ItemType Directory -Path target\pages -Force | Out-Null
-          New-Item -ItemType Directory -Path target\pages\reports -Force | Out-Null
-          New-Item -ItemType Directory -Path target\pages\javadoc -Force | Out-Null
-          Copy-Item -Path README.md -Destination target\pages\README.md -Force
-          Copy-Item -Path target\allure-report\* -Destination target\pages\reports -Recurse -Force
-          Copy-Item -Path target\apidocs\* -Destination target\pages\javadoc -Recurse -Force
-          @'
+          mkdir -p target/pages/reports
+          mkdir -p target/pages/javadoc
+          cp README.md target/pages/README.md
+          cp -R target/allure-report/. target/pages/reports/
+          cp -R target/apidocs/. target/pages/javadoc/
+          cat <<'EOF' > target/pages/index.html
           <!DOCTYPE html>
           <html lang="pt-BR">
           <head>
@@ -140,7 +195,7 @@ jobs:
               <p><a href="https://github.com/ThiagoSantana99/demo_automacao/blob/master/README.md">Abrir README</a></p>
           </body>
           </html>
-          '@ | Set-Content -Path target\pages\index.html -Encoding UTF8
+          EOF
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
