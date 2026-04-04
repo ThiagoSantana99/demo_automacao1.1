@@ -28,9 +28,11 @@ RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd6
     && apt-get install -y ./google-chrome-stable_current_amd64.deb \
     && rm google-chrome-stable_current_amd64.deb
 
-RUN chmod -R 777 /workspace
+
 
 WORKDIR /workspace
+
+RUN chmod -R 777 /workspace
 
 COPY . /workspace
 COPY docker/entrypoint.sh /usr/local/bin/project-entrypoint.sh
