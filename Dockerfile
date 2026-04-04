@@ -5,6 +5,7 @@ ENV DISPLAY=:99
 ENV SCREEN_WIDTH=1920
 ENV SCREEN_HEIGHT=1080
 ENV SCREEN_DEPTH=24
+ENV MAVEN_OPTS=-Xmx1024m
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
@@ -26,6 +27,8 @@ RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd6
     && apt-get update \
     && apt-get install -y ./google-chrome-stable_current_amd64.deb \
     && rm google-chrome-stable_current_amd64.deb
+
+RUN chmod -R 777 /workspace
 
 WORKDIR /workspace
 
