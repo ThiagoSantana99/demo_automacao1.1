@@ -59,7 +59,7 @@ jobs:
           -DLOG_LEVEL=INFO
           -Dcucumber.filter.tags=${{ github.event.inputs.cucumber_tag || '@AGI' }}
           -Dbrowser=${{ github.event.inputs.browser || 'chrome' }}
-          -Ddataproviderthreadcount=${{ github.event.inputs.parallel_count || '2' }}
+          -Ddataproviderthreadcount=${{ github.event.inputs.parallel_count || '1' }}
           -Dscreen.width=1980
           -Dscreen.height=1024
           -Dheadless=false
