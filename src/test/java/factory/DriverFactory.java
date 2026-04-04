@@ -26,6 +26,9 @@ import org.openqa.selenium.edge.EdgeOptions;
  */
 public class DriverFactory {
 
+    private static final int DEFAULT_SCREEN_WIDTH = 1980;
+    private static final int DEFAULT_SCREEN_HEIGHT = 1024;
+
     /**
      * Enum Browser para representar os navegadores suportados pela automacao.
      */
@@ -50,6 +53,24 @@ public class DriverFactory {
     }
 
     /**
+     * Recupera a largura configurada para a janela do browser.
+     *
+     * @return largura da janela em pixels
+     */
+    private static int getScreenWidth() {
+        return Integer.parseInt(System.getProperty("screen.width", String.valueOf(DEFAULT_SCREEN_WIDTH)));
+    }
+
+    /**
+     * Recupera a altura configurada para a janela do browser.
+     *
+     * @return altura da janela em pixels
+     */
+    private static int getScreenHeight() {
+        return Integer.parseInt(System.getProperty("screen.height", String.valueOf(DEFAULT_SCREEN_HEIGHT)));
+    }
+
+    /**
      * Cria uma instancia de WebDriver para o navegador informado.
      * <p>
      * Responsabilidades:
@@ -63,6 +84,10 @@ public class DriverFactory {
     public static WebDriver createDriver(Browser browser) {
         WebDriver driver;
         boolean headless = isHeadlessEnabled();
+        int screenWidth = getScreenWidth();
+        int screenHeight = getScreenHeight();
+        String screenSizeArgument = String.format("--window-size=%d,%d", screenWidth, screenHeight);
+        Dimension screenDimension = new Dimension(screenWidth, screenHeight);
 
         switch (browser) {
             case EDGE:
@@ -73,12 +98,13 @@ public class DriverFactory {
                 edgeOptions.addArguments("--disable-cache");
                 edgeOptions.addArguments("--disable-gpu");
                 edgeOptions.addArguments("--no-sandbox");
-                edgeOptions.addArguments("--window-size=1920,1080");
+                edgeOptions.addArguments("--start-maximized");
+                edgeOptions.addArguments(screenSizeArgument);
                 if (headless) {
                     edgeOptions.addArguments("--headless=new");
                 }
                 driver = new EdgeDriver(edgeOptions);
-                driver.manage().window().setSize(new Dimension(1920, 1080));
+                driver.manage().window().setSize(screenDimension);
                 driver.manage().window().maximize();
                 return driver;
 
@@ -92,12 +118,13 @@ public class DriverFactory {
                 chromeOptions.addArguments("--disable-cache");
                 chromeOptions.addArguments("--disable-gpu");
                 chromeOptions.addArguments("--no-sandbox");
-                chromeOptions.addArguments("--window-size=1920,1080");
+                chromeOptions.addArguments("--start-maximized");
+                chromeOptions.addArguments(screenSizeArgument);
                 if (headless) {
                     chromeOptions.addArguments("--headless=new");
                 }
                 driver = new ChromeDriver(chromeOptions);
-                driver.manage().window().setSize(new Dimension(1920, 1080));
+                driver.manage().window().setSize(screenDimension);
                 driver.manage().window().maximize();
                 driver.manage().deleteAllCookies();
                 return driver;

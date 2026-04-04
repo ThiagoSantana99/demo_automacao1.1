@@ -60,6 +60,8 @@ jobs:
           -Dcucumber.filter.tags=${{ github.event.inputs.cucumber_tag || '@AGI' }}
           -Dbrowser=${{ github.event.inputs.browser || 'chrome' }}
           -Ddataproviderthreadcount=${{ github.event.inputs.parallel_count || '2' }}
+          -Dscreen.width=1980
+          -Dscreen.height=1024
           -Dheadless=false
 
       - name: Upload Allure results
@@ -108,6 +110,8 @@ jobs:
           -Dcucumber.filter.tags=${{ github.event.inputs.cucumber_tag || '@AGI' }}
           -Dbrowser=${{ github.event.inputs.browser || 'chrome' }}
           -Ddataproviderthreadcount=${{ github.event.inputs.parallel_count || '2' }}
+          -Dscreen.width=1980
+          -Dscreen.height=1024
           -Dheadless=false
 
       - name: Upload Allure results
@@ -181,7 +185,17 @@ jobs:
           mkdir -p target/pages/javadoc
           cp README.md target/pages/README.md
           cp -R target/allure-report/. target/pages/reports/
-          cp -R target/apidocs/. target/pages/javadoc/
+          JAVADOC_DIR=""
+          if [ -d "target/apidocs" ]; then
+            JAVADOC_DIR="target/apidocs"
+          elif [ -d "target/site/apidocs" ]; then
+            JAVADOC_DIR="target/site/apidocs"
+          fi
+          if [ -n "$JAVADOC_DIR" ]; then
+            cp -R "$JAVADOC_DIR"/. target/pages/javadoc/
+          else
+            echo "JavaDoc directory not found. Skipping JavaDoc copy."
+          fi
           cat <<'EOF' > target/pages/index.html
           <!DOCTYPE html>
           <html lang="pt-BR">
