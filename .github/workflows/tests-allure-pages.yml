@@ -54,7 +54,7 @@ jobs:
           -Dcucumber.filter.tags=${{ github.event.inputs.cucumber_tag || '@AGI' }}
           -Dbrowser=${{ github.event.inputs.browser || 'chrome' }}
           -Ddataproviderthreadcount=${{ github.event.inputs.parallel_count || '2' }}
-          -Dheadless=${{ github.event.inputs.headless || 'true' }}
+          -Dheadless=${{ github.event.inputs.headless || 'false' }}
 
       - name: Upload Allure results
         if: always()
