@@ -200,6 +200,77 @@ Cada execucao gera um arquivo unico no formato:
 logs/test_yyyy-MM-dd_HH-mm-ss.log
 ```
 
+## Execucao em Container com sessao grafica
+
+O projeto agora possui uma stack Docker para rodar a automacao em Linux com sessao grafica virtual exposta por VNC e noVNC. Isso permite acompanhar o browser em tempo real sem depender de area de trabalho local.
+
+Arquivos adicionados:
+
+- `Dockerfile`
+- `docker-compose.yml`
+- `docker/entrypoint.sh`
+
+### Como funciona
+
+O container sobe os seguintes componentes:
+
+- `Xvfb` para criar o display virtual
+- `Fluxbox` como window manager leve
+- `x11vnc` para expor a sessao via VNC
+- `noVNC` para acessar a sessao grafica pelo navegador
+- Maven para executar a suite
+
+### Pre-requisitos
+
+- Docker Desktop instalado
+- Docker Compose disponivel
+
+### Subir a automacao no container
+
+```bash
+docker compose up --build
+```
+
+O comando sobe o ambiente grafico e executa:
+
+```bash
+mvn clean test -Dcucumber.filter.tags=@AGI -Dbrowser=chrome -Ddataproviderthreadcount=1 -Dscreen.width=1920 -Dscreen.height=1080 -Dheadless=false
+```
+
+### Acessar a sessao grafica
+
+Depois de subir o container, abra no navegador:
+
+```text
+http://localhost:6080
+```
+
+Se preferir cliente VNC tradicional, conecte em:
+
+```text
+localhost:5900
+```
+
+### Parametros configuraveis
+
+No `docker-compose.yml`, ajuste as variaveis conforme necessario:
+
+- `BROWSER`
+- `CUCUMBER_TAG`
+- `PARALLEL_COUNT`
+- `HEADLESS`
+- `SCREEN_WIDTH`
+- `SCREEN_HEIGHT`
+- `CHROME_BIN`
+- `CHROMEDRIVER_PATH`
+
+### Observacoes importantes
+
+- O modo recomendado no container e `chrome`.
+- A `DriverFactory` aceita o binario do navegador por `CHROME_BIN` ou `CHROMIUM_BIN` e o driver por `CHROMEDRIVER_PATH`, o que permite usar Chromium no Linux do container sem depender apenas de download em tempo de execucao.
+- Sessao grafica em container aqui significa display virtual acessivel por VNC/noVNC. Nao e uma sessao nativa do Windows.
+- Para UI real em Windows 10, continue usando runner `self-hosted` com sessao logada.
+
 ## Execucao via GitHub Actions
 
 O projeto possui um workflow versionado em [`.github/workflows/tests-allure-pages.yml`](/C:/Users/admin/IdeaProjects/demo_automacao/.github/workflows/tests-allure-pages.yml) para:
@@ -242,15 +313,65 @@ Define o navegador da execucao. Exemplo: `chrome` ou `edge`.
 - `parallel_count`
 Define a quantidade de execucoes paralelas do `DataProvider`.
 
+- `execution_mode`
+Define o ambiente de execucao do workflow:
+`github-hosted-docker-gui` para runner Linux hospedado executando a stack Docker com display virtual
+`self-hosted-windows-gui` para runner Windows com sessao grafica ativa
+
 ### Comando executado no pipeline
 
 O job de testes executa a suite com base neste comando:
 
 ```bash
-mvn clean test -Dcucumber.filter.tags=<TAG> -Dbrowser=<BROWSER> -Ddataproviderthreadcount=<QTDE> -Dheadless=true
+docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
 ```
 
-No CI, a execucao ocorre em modo headless para compatibilidade com o ambiente do GitHub Actions.
+No CI hospedado pelo GitHub, a execucao usa a stack Docker do projeto, que sobe `Xvfb`, `Fluxbox`, `x11vnc` e `noVNC` dentro do container. No modo Windows com interface grafica real, a execucao depende de um runner `self-hosted`.
+
+### Runner Windows 10 com sessao grafica
+
+Se voce precisa executar o browser em uma sessao grafica real no Windows 10, o caminho suportado e usar um runner `self-hosted`. GitHub-hosted runners nao oferecem desktop interativo em Windows.
+
+Pre-requisitos da maquina:
+
+- Windows 10 com usuario local ou corporativo
+- Sessao do Windows iniciada e mantida ativa durante a execucao
+- Java 17 instalado
+- Maven instalado e disponivel no `PATH`
+- Google Chrome e/ou Microsoft Edge instalados
+- Acesso a internet para o WebDriverManager baixar drivers
+
+Passo a passo:
+
+1. No repositorio GitHub, abra `Settings > Actions > Runners`.
+2. Clique em `New self-hosted runner`.
+3. Selecione `Windows`.
+4. Siga os comandos fornecidos pelo GitHub na maquina Windows 10.
+5. Adicione os labels `self-hosted`, `windows` e `win10-gui` ao runner.
+6. Mantenha a maquina logada com a area de trabalho ativa durante a execucao dos testes.
+
+Observacoes importantes:
+
+- Evite bloquear a sessao com `Win + L`, pois isso costuma quebrar automacoes com browser visivel.
+- Se a maquina entrar em hibernacao, suspensao ou screensaver agressivo, a execucao pode falhar.
+- Para browser maximizado de forma consistente, o workflow envia `-Dscreen.width=1920` e `-Dscreen.height=1080`, e a `DriverFactory` ainda chama `maximize()`.
+
+Como disparar no GitHub Actions:
+
+1. Abra `Actions`.
+2. Selecione o workflow `Tests And Allure Pages`.
+3. Clique em `Run workflow`.
+4. Preencha:
+`execution_mode=self-hosted-windows-gui`
+`browser=chrome` ou `browser=edge`
+`cucumber_tag=@AGI`
+`parallel_count=1` ou outro valor adequado
+5. Execute o workflow.
+
+Recomendacao pratica:
+
+- Para validacao funcional e execucao barata, use `github-hosted-docker-gui`.
+- Para casos que realmente exigem janela visivel, foco, rendering grafico ou comportamento especifico de Windows, use `self-hosted-windows-gui`.
 
 ### Artefatos publicados pelo GitHub Actions
 

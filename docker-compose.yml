@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  automacao-gui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: demo-automacao-gui
+    environment:
+      BROWSER: chrome
+      CUCUMBER_TAG: "@AGI"
+      PARALLEL_COUNT: "1"
+      HEADLESS: "false"
+      SCREEN_WIDTH: "1920"
+      SCREEN_HEIGHT: "1080"
+      SCREEN_DEPTH: "24"
+    ports:
+      - "5900:5900"
+      - "6080:6080"
+    shm_size: "2gb"
+    volumes:
+      - ./target:/workspace/target
+      - ./logs:/workspace/logs

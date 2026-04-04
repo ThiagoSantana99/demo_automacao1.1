@@ -29,6 +29,25 @@ public class DriverFactory {
     private static final int DEFAULT_SCREEN_WIDTH = 1980;
     private static final int DEFAULT_SCREEN_HEIGHT = 1024;
 
+    private static String getConfiguredBrowserBinary() {
+        String binaryPath = System.getProperty("chrome.binary");
+        if (binaryPath == null || binaryPath.isBlank()) {
+            binaryPath = System.getenv("CHROME_BIN");
+        }
+        if (binaryPath == null || binaryPath.isBlank()) {
+            binaryPath = System.getenv("CHROMIUM_BIN");
+        }
+        return binaryPath;
+    }
+
+    private static String getConfiguredChromeDriverPath() {
+        String driverPath = System.getProperty("webdriver.chrome.driver");
+        if (driverPath == null || driverPath.isBlank()) {
+            driverPath = System.getenv("CHROMEDRIVER_PATH");
+        }
+        return driverPath;
+    }
+
     /**
      * Enum Browser para representar os navegadores suportados pela automacao.
      */
@@ -111,15 +130,25 @@ public class DriverFactory {
 
             case CHROME:
             default:
-                WebDriverManager.chromedriver().setup();
+                String chromeDriverPath = getConfiguredChromeDriverPath();
+                if (chromeDriverPath == null || chromeDriverPath.isBlank()) {
+                    WebDriverManager.chromedriver().setup();
+                } else {
+                    System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+                }
                 ChromeOptions chromeOptions = new ChromeOptions();
                 chromeOptions.addArguments("--incognito");
                 chromeOptions.addArguments("--disable-application-cache");
                 chromeOptions.addArguments("--disable-cache");
                 chromeOptions.addArguments("--disable-gpu");
+                chromeOptions.addArguments("--disable-dev-shm-usage");
                 chromeOptions.addArguments("--no-sandbox");
                 chromeOptions.addArguments("--start-maximized");
                 chromeOptions.addArguments(screenSizeArgument);
+                String browserBinary = getConfiguredBrowserBinary();
+                if (browserBinary != null && !browserBinary.isBlank()) {
+                    chromeOptions.setBinary(browserBinary);
+                }
                 if (headless) {
                     chromeOptions.addArguments("--headless=new");
                 }

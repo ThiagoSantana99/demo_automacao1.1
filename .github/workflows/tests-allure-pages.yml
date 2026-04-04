@@ -20,9 +20,9 @@ on:
         required: false
         default: "2"
       execution_mode:
-        description: "Modo de execucao do workflow"
+        description: "Modo de execucao do workflow: github-hosted-docker-gui (Docker com display virtual) ou self-hosted-windows-gui (Windows com sessao grafica ativa)"
         required: false
-        default: "github-hosted-xvfb"
+        default: "github-hosted-docker-gui"
 
 permissions:
   contents: read
@@ -35,34 +35,30 @@ concurrency:
 
 jobs:
   tests-github-hosted:
-    if: github.event_name == 'push' || github.event.inputs.execution_mode == 'github-hosted-xvfb'
+    if: github.event_name == 'push' || github.event.inputs.execution_mode == 'github-hosted-docker-gui'
     runs-on: ubuntu-latest
+    env:
+      SCREEN_WIDTH: "1920"
+      SCREEN_HEIGHT: "1080"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-          cache: maven
+      - name: Prepare output directories
+        run: mkdir -p target logs
 
-      - name: Install Xvfb
-        run: sudo apt-get update && sudo apt-get install -y xvfb
+      - name: Run automated tests in Docker GUI stack
+        env:
+          BROWSER: ${{ github.event.inputs.browser || 'chrome' }}
+          CUCUMBER_TAG: ${{ github.event.inputs.cucumber_tag || '@AGI' }}
+          PARALLEL_COUNT: ${{ github.event.inputs.parallel_count || '1' }}
+          HEADLESS: "false"
+        run: docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
 
-      - name: Run automated tests with Xvfb
-        run: >
-          xvfb-run --server-args="-screen 0 1980x1024x24"
-          mvn clean test
-          -DLOG_LEVEL=INFO
-          -Dcucumber.filter.tags=${{ github.event.inputs.cucumber_tag || '@AGI' }}
-          -Dbrowser=${{ github.event.inputs.browser || 'chrome' }}
-          -Ddataproviderthreadcount=${{ github.event.inputs.parallel_count || '1' }}
-          -Dscreen.width=1980
-          -Dscreen.height=1024
-          -Dheadless=false
+      - name: Stop Docker GUI stack
+        if: always()
+        run: docker compose down --volumes --remove-orphans
 
       - name: Upload Allure results
         if: always()
@@ -89,8 +85,14 @@ jobs:
           if-no-files-found: warn
 
   tests-self-hosted:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.execution_mode == 'self-hosted-gui'
-    runs-on: self-hosted
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.execution_mode == 'self-hosted-windows-gui'
+    runs-on:
+      - self-hosted
+      - windows
+      - win10-gui
+    env:
+      SCREEN_WIDTH: "1920"
+      SCREEN_HEIGHT: "1080"
 
     steps:
       - name: Checkout repository
@@ -103,16 +105,22 @@ jobs:
           java-version: "17"
           cache: maven
 
-      - name: Run automated tests with GUI session
+      - name: Run automated tests with Windows GUI session
         run: >
           mvn clean test
           -DLOG_LEVEL=INFO
           -Dcucumber.filter.tags=${{ github.event.inputs.cucumber_tag || '@AGI' }}
           -Dbrowser=${{ github.event.inputs.browser || 'chrome' }}
           -Ddataproviderthreadcount=${{ github.event.inputs.parallel_count || '2' }}
-          -Dscreen.width=1980
-          -Dscreen.height=1024
+          -Dscreen.width=${env:SCREEN_WIDTH}
+          -Dscreen.height=${env:SCREEN_HEIGHT}
           -Dheadless=false
+
+      - name: Session requirements
+        shell: powershell
+        run: |
+          Write-Host "Este job exige runner self-hosted Windows com sessao grafica interativa ativa."
+          Write-Host "Contêiner Windows 10 com desktop interativo nao e suportado em GitHub-hosted runners."
 
       - name: Upload Allure results
         if: always()
