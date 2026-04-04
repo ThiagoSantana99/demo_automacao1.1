@@ -115,6 +115,7 @@ jobs:
           -Dscreen.width=${env:SCREEN_WIDTH}
           -Dscreen.height=${env:SCREEN_HEIGHT}
           -Dheadless=false
+          -Dmaven.clean.failOnError=false
 
       - name: Session requirements
         shell: powershell
