@@ -103,7 +103,7 @@ public class BlogSearchPage extends BasePage {
             helper.waitForPageLoaded();
             List<WebElement> articles = getArticlesOrThrow();
             List<Article> articlesList = new ArrayList<>();
-            ScreenshotUtil.Esperar(500);
+            ScreenshotUtil.Esperar(900);
             ScreenshotUtil.attachScreenshot("Evidencia Resultado Pesquisa");
             Allure.step("Artigos Encontrados: Total de Artigos = " + articles.size());
 

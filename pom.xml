@@ -185,7 +185,7 @@
                     <docencoding>UTF-8</docencoding>
                     <charset>UTF-8</charset>
                     <!-- Diretório onde o JavaDoc será gerado -->
-                    <destDir>target/apidocs</destDir>
+<!--                    <destDir>target/apidocs</destDir>-->
                     <!-- Opções adicionais -->
                     <show>protected</show>
                     <noqualifier>all</noqualifier>
