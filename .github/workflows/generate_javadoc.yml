@@ -27,13 +27,13 @@ jobs:
       - name: Generate JavaDoc
         run: mvn javadoc:javadoc
 
-      - name: Prepare docs folder
+      - name: Prepare javadoc folder
         run: |
-          mkdir -p public/doc
+          mkdir -p public/javadoc
           if [ -d "target/apidocs" ]; then
-            cp -r target/apidocs/. public/doc/
+            cp -r target/apidocs/. public/javadoc/
           elif [ -d "target/site/apidocs" ]; then
-            cp -r target/site/apidocs/. public/doc/
+            cp -r target/site/apidocs/. public/javadoc/
           else
             echo "JavaDoc directory not found."
             exit 1

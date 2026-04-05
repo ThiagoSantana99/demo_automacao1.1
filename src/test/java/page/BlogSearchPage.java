@@ -99,6 +99,7 @@ public class BlogSearchPage extends BasePage {
             helper.scrollToBottom();
             helper.waitForPageLoaded();
             helper.scrollToTop();
+            helper.waitForPageLoaded();
             List<WebElement> articles = getArticlesOrThrow();
             List<Article> articlesList = new ArrayList<>();
             ScreenshotUtil.Esperar(500);

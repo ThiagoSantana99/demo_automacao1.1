@@ -9,12 +9,13 @@ O objetivo da automacao e validar o comportamento da busca de artigos no site, c
 
 ## Cenários mapeados
 
+```text
 Feature: Busca de artigos no BlogAgi
 
 Background:
 Given que o usuário acessa a página inicial do blog
 
-@E2E @positive
+@E2E @positive  
 Scenario Outline: Busca <Nome do Caso de Teste>
 When o usuário digita <termo> no campo de busca
 And pressiona Enter
@@ -50,7 +51,7 @@ Scenario: Busca ignora acentuação
 When o usuário digita "emprestimo" no campo de busca
 And pressiona Enter
 Then os resultados devem incluir conteúdos de "empréstimo"
-
+```
 
 ## Arquitetura do Projeto
 
@@ -163,7 +164,7 @@ Para executar o projeto localmente, o ambiente deve possuir:
 ### Comando base de execucao
 
 ```bash
-mvn clean test -Dcucumber.filter.tags=@AGI -Dbrowser=chrome -Ddataproviderthreadcount=3
+mvn clean test -Dcucumber.filter.tags=@E2E -Dbrowser=chrome -Ddataproviderthreadcount=2
 ```
 
 ### Explicacao dos parametros
@@ -174,7 +175,7 @@ Limpa os artefatos da execucao anterior.
 - `test`
 Executa a suite automatizada.
 
-- `-Dcucumber.filter.tags=@AGI`
+- `-Dcucumber.filter.tags=@E2E`
 Permite selecionar a TAG dos testes que serao executados.
 
 - `-Dbrowser=chrome`
@@ -191,7 +192,7 @@ Controla a execucao em modo headless. Para CI, recomenda-se `true`.
 ### Exemplos de execucao local
 
 ```bash
-mvn clean test -Dcucumber.filter.tags=@AGI -Dbrowser=chrome -Ddataproviderthreadcount=2 -Dheadless=false
+mvn clean test -Dcucumber.filter.tags=@E2E -Dbrowser=chrome -Ddataproviderthreadcount=2 -Dheadless=false
 ```
 
 ```bash
@@ -280,7 +281,7 @@ Exemplo 2, executando com `Edge` no `cmd`:
 
 ```cmd
 cd C:\Users\admin\IdeaProjects\demo_automacao1.1
-set SELENIUM_IMAGE=selenium/standalone-edge && set BROWSER=edge && set CUCUMBER_TAG=@AGI && set PARALLEL_COUNT=1 && set HEADLESS=false && docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
+set SELENIUM_IMAGE=selenium/standalone-edge && set BROWSER=edge && set CUCUMBER_TAG=@E2E && set PARALLEL_COUNT=1 && set HEADLESS=false && docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
 ```
 
 Esse comando cria a imagem, sobe a sessao grafica virtual e executa a suite com Maven dentro do container.
@@ -290,7 +291,7 @@ Esse comando cria a imagem, sobe a sessao grafica virtual e executa a suite com 
 O servico `automacao-gui` usa por padrao:
 
 - `BROWSER=chrome`
-- `CUCUMBER_TAG=@AGI`
+- `CUCUMBER_TAG=@E2E`
 - `PARALLEL_COUNT=1`
 - `HEADLESS=false`
 - `SCREEN_WIDTH=1920`
@@ -363,7 +364,7 @@ docker compose up --build --abort-on-container-exit --exit-code-from automacao-g
 
 Inputs disponiveis no disparo manual:
 
-- `cucumber_tag` com default `@AGI`
+- `cucumber_tag` com default `@E2E`
 - `browser` com default `chrome`
 - `parallel_count` com default `2`
 - `execution_mode` com default `github-hosted-docker-gui`
@@ -391,10 +392,10 @@ Pre-requisitos do runner:
 Comando executado nesse modo:
 
 ```bash
-mvn clean test -DLOG_LEVEL=INFO -Dcucumber.filter.tags=@AGI -Dbrowser=chrome -Ddataproviderthreadcount=2 -Dscreen.width=1920 -Dscreen.height=1080 -Dheadless=false -Dmaven.clean.failOnError=false
+mvn clean test -DLOG_LEVEL=INFO -Dcucumber.filter.tags=@E2E -Dbrowser=chrome -Ddataproviderthreadcount=2 -Dscreen.width=1920 -Dscreen.height=1080 -Dheadless=false -Dmaven.clean.failOnError=false
 ```
 
-No workflow real, os valores de `@AGI`, `chrome` e `2` sao substituidos pelos inputs recebidos no disparo manual.
+No workflow real, os valores de `@E2E`, `chrome` e `2` sao substituidos pelos inputs recebidos no disparo manual.
 
 ### Como rodar manualmente no GitHub
 
