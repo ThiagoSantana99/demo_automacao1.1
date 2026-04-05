@@ -15,7 +15,19 @@ export CHROMEDRIVER_PATH="${CHROMEDRIVER_PATH:-/usr/bin/chromedriver}"
 
 mkdir -p /tmp/.X11-unix
 
-Xvfb "${DISPLAY}" -screen 0 "${SCREEN_WIDTH}x${SCREEN_HEIGHT}x${SCREEN_DEPTH}" &
+DISPLAY_NUMBER="${DISPLAY#:}"
+DISPLAY_LOCK_FILE="/tmp/.X${DISPLAY_NUMBER}-lock"
+
+if xdpyinfo -display "${DISPLAY}" >/dev/null 2>&1; then
+  echo "Display ${DISPLAY} already active, reusing existing X server."
+else
+  if [ -f "${DISPLAY_LOCK_FILE}" ]; then
+    echo "Removing stale X lock: ${DISPLAY_LOCK_FILE}"
+    rm -f "${DISPLAY_LOCK_FILE}"
+  fi
+  Xvfb "${DISPLAY}" -screen 0 "${SCREEN_WIDTH}x${SCREEN_HEIGHT}x${SCREEN_DEPTH}" &
+fi
+
 fluxbox >/tmp/fluxbox.log 2>&1 &
 x11vnc -display "${DISPLAY}" -forever -shared -nopw -rfbport 5900 >/tmp/x11vnc.log 2>&1 &
 websockify --web=/usr/share/novnc/ 6080 localhost:5900 >/tmp/novnc.log 2>&1 &

@@ -67,7 +67,7 @@ public class blogSearchSteps {
     @When("clica no ícone de busca")
     public void clicarNaLupa() {
         blogPage.clickSearchIcon();
-//        blogPage.clickSearchIcon();
+        blogPage.clickSearchIcon();
 //        blogPage.doubleclickSearchIcon("Evidencia Click na Lupa");
         Assert.assertEquals(BlogSearchPage.getSearchTitle(), "Resultados encontrados para: " + termoBusca.trim());
     }

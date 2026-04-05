@@ -22,8 +22,6 @@ RUN chmod +x /usr/local/bin/project-entrypoint.sh \
     && sed -i 's/\r$//' /usr/local/bin/project-entrypoint.sh \
     && chown -R seluser:seluser /workspace
 
-USER seluser
-
 EXPOSE 5900 6080
 
 ENTRYPOINT ["bash", "/usr/local/bin/project-entrypoint.sh"]
