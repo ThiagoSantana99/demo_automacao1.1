@@ -95,6 +95,7 @@ public class BlogSearchPage extends BasePage {
             helper.reloadPage();
             helper.waitForPageLoaded();
             helper.scrollToBottom();
+            helper.scrollIntoView(searchTitle);
             helper.scrollToTop();
             helper.scrollToBottom();
             helper.waitForPageLoaded();
