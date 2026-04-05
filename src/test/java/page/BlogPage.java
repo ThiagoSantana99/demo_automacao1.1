@@ -204,6 +204,8 @@ public class BlogPage extends BasePage {
      * @param searchText texto a ser pesquisado
      */
     public void enterSearch(String searchText) {
+        helper.moveScreenUI();
+        helper.waitForPageLoaded();
         helper.click(searchIcon);
         helper.waitForVisibility(searchInputLocator);
         helper.scrollIntoView(searchInputLocator);
