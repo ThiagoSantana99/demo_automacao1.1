@@ -28,7 +28,7 @@ Feature: Busca de artigos no AgiBlog
       | Busca com caracteres especiais | %$#@!     | Lamentamos, mas nada foi encontrado para sua pesquisa, tente novamente com outras palavras.  |
       | Busca com termo parcial        | emprés    | Lamentamos, mas nada foi encontrado para sua pesquisa, tente novamente com outras palavras.  |
 
-@AGI
+@E2E
   Scenario: Busca usando clique na lupa
     When o usuário digita "empréstimo" no campo de busca
     And clica no ícone de busca

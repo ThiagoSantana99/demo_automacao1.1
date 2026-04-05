@@ -1,6 +1,7 @@
 # Projeto de Automacao de Testes
 
-Este projeto automatiza testes do site XPTO com foco na validacao da funcionalidade de busca de artigos. A suite foi estruturada para executar cenarios BDD com Cucumber, navegacao web com Selenium WebDriver, orquestracao com TestNG e gerenciamento de build pelo Maven.
+Este projeto automatiza testes do site AGIBlog "https://blogdoagi.com.br/" com foco na validaçãp da funcionalidade de busca de artigos. 
+A suite foi estruturada para executar cenários BDD com Cucumber usando Selenium WebDriver, orquestração com TestNG e gerenciamento de build pelo Maven.
 
 ## Objetivo
 
@@ -221,6 +222,20 @@ Na raiz do projeto:
 
 ```bash
 docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
+```
+
+Exemplo 1, com valores padrao do `docker-compose.yml`:
+
+```cmd
+cd C:\Users\admin\IdeaProjects\demo_automacao1.1
+docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
+```
+
+Exemplo 2, sobrescrevendo as variaveis de execucao no `cmd`:
+
+```cmd
+cd C:\Users\admin\IdeaProjects\demo_automacao1.1
+set CUCUMBER_TAG=@AGI && set BROWSER=chrome && set PARALLEL_COUNT=1 && set HEADLESS=false && docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
 ```
 
 Esse comando cria a imagem, sobe a sessao grafica virtual e executa a suite com Maven dentro do container.

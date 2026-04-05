@@ -7,13 +7,13 @@ services:
       dockerfile: Dockerfile
     container_name: demo-automacao-gui
     environment:
-      BROWSER: chrome
-      CUCUMBER_TAG: "@E2E"
-      PARALLEL_COUNT: "1"
-      HEADLESS: "false"
-      SCREEN_WIDTH: "1920"
-      SCREEN_HEIGHT: "1080"
-      SCREEN_DEPTH: "24"
+      BROWSER: ${BROWSER:-chrome}
+      CUCUMBER_TAG: ${CUCUMBER_TAG:-@E2E}
+      PARALLEL_COUNT: ${PARALLEL_COUNT:-1}
+      HEADLESS: ${HEADLESS:-false}
+      SCREEN_WIDTH: ${SCREEN_WIDTH:-1920}
+      SCREEN_HEIGHT: ${SCREEN_HEIGHT:-1080}
+      SCREEN_DEPTH: ${SCREEN_DEPTH:-24}
     ports:
       - "5900:5900"
       - "6080:6080"
