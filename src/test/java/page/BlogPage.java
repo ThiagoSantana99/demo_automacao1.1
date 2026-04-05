@@ -136,6 +136,8 @@ public class BlogPage extends BasePage {
     public void openHomePage() {
         driver.get(HOMEPAGE);
         helper.waitForFullLoad();
+        helper.moveScreenUI();
+        helper.moveScreenUI();
         ScreenshotUtil.Esperar(300);
         ScreenshotUtil.attachScreenshot("Pagina Carregada com Sucesso");
     }

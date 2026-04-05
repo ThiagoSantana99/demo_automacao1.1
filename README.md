@@ -1,11 +1,56 @@
 # Projeto de Automacao de Testes
 
-Este projeto automatiza testes do site AGIBlog "https://blogdoagi.com.br/" com foco na validaçãp da funcionalidade de busca de artigos. 
+Este projeto automatiza testes do site "https://blogdoagi.com.br/" com foco na validação da funcionalidade de busca de artigos. 
 A suite foi estruturada para executar cenários BDD com Cucumber usando Selenium WebDriver, orquestração com TestNG e gerenciamento de build pelo Maven.
 
 ## Objetivo
 
 O objetivo da automacao e validar o comportamento da busca de artigos no site, cobrindo cenarios positivos e negativos, variacoes de entrada do usuario e diferentes formas de disparar a pesquisa pela interface.
+
+## Cenários mapeados
+
+Feature: Busca de artigos no BlogAgi
+
+Background:
+Given que o usuário acessa a página inicial do blog
+
+@E2E @positive
+Scenario Outline: Busca <Nome do Caso de Teste>
+When o usuário digita <termo> no campo de busca
+And pressiona Enter
+Then deve visualizar uma lista de artigos
+And os resultados devem conter a palavra "<resultado>" no título ou conteúdo
+
+    Examples:
+      | Nome do Caso de Teste                  | termo | resultado |
+      | por palavra-chave válida usando enter  | "pix"     | pix       |
+      | é case insensitive                     | "PIX"     | PIX       |
+      | com espaços extras                     | " pix "   | pix       |
+
+@E2E @negative @regression
+Scenario Outline: Tentativa de Busca - <Nome do Caso de Teste>
+When o usuário digita "<termo>" no campo de busca
+And pressiona Enter
+Then deve visualizar mensagem de "<resultado>"
+
+    Examples:
+      | Nome do Caso de Teste          | termo       | resultado                                                                                  |
+      | Busca sem resultados           | xyzabc123 | Lamentamos, mas nada foi encontrado para sua pesquisa, tente novamente com outras palavras.  |
+      | Busca com caracteres especiais | %$#@!     | Lamentamos, mas nada foi encontrado para sua pesquisa, tente novamente com outras palavras.  |
+      | Busca com termo parcial        | emprés    | Lamentamos, mas nada foi encontrado para sua pesquisa, tente novamente com outras palavras.  |
+
+@E2E
+Scenario: Busca usando clique na lupa
+When o usuário digita "empréstimo" no campo de busca
+And clica no ícone de busca
+Then deve visualizar uma lista de artigos
+
+@E2E
+Scenario: Busca ignora acentuação
+When o usuário digita "emprestimo" no campo de busca
+And pressiona Enter
+Then os resultados devem incluir conteúdos de "empréstimo"
+
 
 ## Arquitetura do Projeto
 
@@ -173,7 +218,7 @@ Ou para gerar o HTML localmente:
 allure generate target/allure-results --clean -o target/allure-report
 ```
 
-### Geracao local do JavaDoc
+### Geracao local do JavaDoc!
 
 Para gerar a documentacao JavaDoc localmente:
 

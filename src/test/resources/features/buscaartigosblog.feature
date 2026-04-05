@@ -1,4 +1,4 @@
-Feature: Busca de artigos no AgiBlog
+Feature: Busca de artigos no BlogAgi
 
   Background:
     Given que o usuário acessa a página inicial do blog
