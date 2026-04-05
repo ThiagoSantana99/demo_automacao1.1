@@ -18,15 +18,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgbm1 \
     libasound2t64 \
     procps \
+    curl \
+    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y xvfb
 
-# Instala Google Chrome
-RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+# Instalar Google Chrome
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list \
     && apt-get update \
-    && apt-get install -y ./google-chrome-stable_current_amd64.deb \
-    && rm google-chrome-stable_current_amd64.deb
+    && apt-get install -y google-chrome-stable
+
+# Instalar ChromeDriver
+RUN CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE) \
+    && wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip \
+    && unzip /tmp/chromedriver.zip -d /usr/bin/ \
+    && chmod +x /usr/bin/chromedriver
+
 
 
 
