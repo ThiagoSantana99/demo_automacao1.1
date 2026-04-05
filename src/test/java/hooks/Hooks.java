@@ -86,6 +86,7 @@ public class Hooks {
     public void tearDown(Scenario scenario) {
         if (scenario.isFailed()) {
             logger.error("=== CENARIO FALHOU: {} ===", scenario.getName());
+            ScreenshotUtil.Esperar(500);
             ScreenshotUtil.attachScreenshot("Erro " + scenario.getName());
             try {
                 String latestLogFile = getLatestLogFile();
@@ -100,6 +101,7 @@ public class Hooks {
             }
         } else {
             logger.info("=== CENARIO EXECUTADO COM SUCESSO: {} ===", scenario.getName());
+            ScreenshotUtil.Esperar(500);
             ScreenshotUtil.attachScreenshot("Sucesso " + scenario.getName());
         }
 

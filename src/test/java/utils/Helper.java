@@ -105,6 +105,16 @@ public class Helper {
     }
 
     /**
+     * Aguarda um elemento localizado por By ficar visivel.
+     *
+     * @param locator localizador do elemento
+     * @return elemento visivel encontrado
+     */
+    public WebElement waitForVisibility(By locator) {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
+    /**
      * Verifica a visibilidade de um WebElement ja mapeado.
      *
      * @param element elemento a ser validado
@@ -189,6 +199,7 @@ public class Helper {
                     .pause(Duration.ofMillis(200))
                     .doubleClick()
                     .perform();
+            ScreenshotUtil.Esperar(300);
             ScreenshotUtil.attachScreenshot("Evidencia-> " + nomeEvid);
         } catch (Exception e1) {
             logger.error("Falha no double click padrao. Executando fallback via JavaScript.", e1);
@@ -196,6 +207,7 @@ public class Helper {
                 clickOutside();
                 scrollIntoView(element);
                 jsDoubleClick(element);
+                ScreenshotUtil.Esperar(300);
                 ScreenshotUtil.attachScreenshot("EvidenciaJS-> " + nomeEvid);
             } catch (Exception e2) {
                 logger.error("Falha ao executar double click via JavaScript.", e2);
@@ -245,6 +257,15 @@ public class Helper {
     }
 
     /**
+     * Move a visualizacao para um elemento localizado por By.
+     *
+     * @param locator localizador do elemento
+     */
+    public void scrollIntoView(By locator) {
+        scrollIntoView(waitForVisibility(locator));
+    }
+
+    /**
      * Executa clique via JavaScript.
      *
      * @param element elemento alvo do clique
@@ -291,6 +312,7 @@ public class Helper {
         waitForFullLoad();
         WebElement body = driver.findElement(By.tagName("body"));
         body.click();
+        ScreenshotUtil.Esperar(200);
         ScreenshotUtil.attachScreenshot("Evidencia-> " + nomeEvid);
         actions.moveToElement(element)
                 .pause(Duration.ofMillis(200))

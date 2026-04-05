@@ -101,7 +101,7 @@ public class BlogSearchPage extends BasePage {
             helper.scrollToTop();
             List<WebElement> articles = getArticlesOrThrow();
             List<Article> articlesList = new ArrayList<>();
-
+            ScreenshotUtil.Esperar(500);
             ScreenshotUtil.attachScreenshot("Evidencia Resultado Pesquisa");
             Allure.step("Artigos Encontrados: Total de Artigos = " + articles.size());
 
@@ -262,6 +262,7 @@ public class BlogSearchPage extends BasePage {
      */
     public boolean resultsContainTerm(String term) {
         List<WebElement> elements = driver.findElements(By.xpath(ARTICLE_TITLE_XPATH));
+        ScreenshotUtil.Esperar(500);
         ScreenshotUtil.attachScreenshot("Resultado da Busca");
         for (WebElement el : elements) {
             if (el.getText().toLowerCase().contains(term.toLowerCase())) {

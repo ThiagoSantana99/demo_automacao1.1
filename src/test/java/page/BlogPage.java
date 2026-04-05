@@ -6,7 +6,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import utils.ScreenshotUtil;
 
 import java.util.List;
@@ -32,6 +31,7 @@ public class BlogPage extends BasePage {
     private static final Logger logger = LoggerFactory.getLogger(BlogPage.class);
 
     private final By results = By.cssSelector("article");
+    private final By searchInputLocator = By.cssSelector("#search-field");
 
     @FindBy(css = "#search-field")
     private WebElement searchInput;
@@ -78,6 +78,7 @@ public class BlogPage extends BasePage {
      */
     public void clickSearchIcon() {
         helper.click(searchIcon);
+        helper.waitForVisibility(searchInputLocator);
     }
 
     /**
@@ -143,7 +144,8 @@ public class BlogPage extends BasePage {
      * Submete a busca usando a tecla Enter no campo de pesquisa.
      */
     public void submitWithEnter() {
-        helper.pressEnter(searchInput);
+        helper.waitForVisibility(searchInputLocator);
+        helper.pressEnter(helper.waitForVisibility(searchInputLocator));
         ScreenshotUtil.attachScreenshot("Pesquisando");
     }
 
@@ -191,6 +193,7 @@ public class BlogPage extends BasePage {
     public String getEmptyMessage() {
         helper.waitForFullLoad();
         helper.scrollIntoView(searchIcon);
+        ScreenshotUtil.Esperar(300);
         ScreenshotUtil.attachScreenshot("Evidencia Sem Resultado na Busca");
         return emptyMessage.getText();
     }
@@ -202,9 +205,10 @@ public class BlogPage extends BasePage {
      */
     public void enterSearch(String searchText) {
         helper.click(searchIcon);
-        helper.scrollIntoView(searchInput);
-        helper.isVisible(searchInput);
-        helper.type(searchInput, searchText);
+        helper.waitForVisibility(searchInputLocator);
+        helper.scrollIntoView(searchInputLocator);
+        helper.type(searchInputLocator, searchText);
+        ScreenshotUtil.Esperar(300);
         ScreenshotUtil.attachScreenshot("Realizando Busca do termo: " + searchText);
     }
 }
