@@ -1,4 +1,4 @@
-FROM maven:3.9.11-eclipse-temurin-17
+FROM selenium/standalone-chrome
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DISPLAY=:99
