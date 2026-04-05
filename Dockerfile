@@ -37,8 +37,6 @@ RUN CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_R
     && chmod +x /usr/bin/chromedriver
 
 
-
-
 WORKDIR /workspace
 
 RUN chmod -R 777 /workspace
