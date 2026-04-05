@@ -9,8 +9,8 @@ export BROWSER="${BROWSER:-chrome}"
 export CUCUMBER_TAG="${CUCUMBER_TAG:-@AGI}"
 export PARALLEL_COUNT="${PARALLEL_COUNT:-1}"
 export HEADLESS="${HEADLESS:-false}"
-export CHROME_BIN="${CHROME_BIN:-/usr/bin/chromium}"
-export CHROMIUM_BIN="${CHROMIUM_BIN:-/usr/bin/chromium}"
+export CHROME_BIN="${CHROME_BIN:-/usr/bin/google-chrome}"
+export CHROMIUM_BIN="${CHROMIUM_BIN:-/usr/bin/google-chrome}"
 export CHROMEDRIVER_PATH="${CHROMEDRIVER_PATH:-/usr/bin/chromedriver}"
 
 mkdir -p /tmp/.X11-unix
