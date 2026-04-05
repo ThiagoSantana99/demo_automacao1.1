@@ -200,218 +200,170 @@ Cada execucao gera um arquivo unico no formato:
 logs/test_yyyy-MM-dd_HH-mm-ss.log
 ```
 
-## Execucao em Container com sessao grafica
+## Execucao Local com Docker
 
-O projeto agora possui uma stack Docker para rodar a automacao em Linux com sessao grafica virtual exposta por VNC e noVNC. Isso permite acompanhar o browser em tempo real sem depender de area de trabalho local.
+O projeto possui uma stack Docker para rodar a automacao em Linux com sessao grafica virtual exposta por VNC e noVNC. Esse e o caminho mais simples para reproduzir localmente o mesmo modo usado no GitHub Actions hospedado.
 
-Arquivos adicionados:
+Arquivos envolvidos:
 
 - `Dockerfile`
 - `docker-compose.yml`
 - `docker/entrypoint.sh`
 
-### Como funciona
-
-O container sobe os seguintes componentes:
-
-- `Xvfb` para criar o display virtual
-- `Fluxbox` como window manager leve
-- `x11vnc` para expor a sessao via VNC
-- `noVNC` para acessar a sessao grafica pelo navegador
-- Maven para executar a suite
-
 ### Pre-requisitos
 
 - Docker Desktop instalado
-- Docker Compose disponivel
+- Docker Compose habilitado
 
-### Subir a automacao no container
+### Como executar
 
-```bash
-docker compose up --build
-```
-
-O comando sobe o ambiente grafico e executa:
-
-```bash
-mvn clean test -Dcucumber.filter.tags=@AGI -Dbrowser=chrome -Ddataproviderthreadcount=1 -Dscreen.width=1920 -Dscreen.height=1080 -Dheadless=false
-```
-
-### Acessar a sessao grafica
-
-Depois de subir o container, abra no navegador:
-
-```text
-http://localhost:6080
-```
-
-Se preferir cliente VNC tradicional, conecte em:
-
-```text
-localhost:5900
-```
-
-### Parametros configuraveis
-
-No `docker-compose.yml`, ajuste as variaveis conforme necessario:
-
-- `BROWSER`
-- `CUCUMBER_TAG`
-- `PARALLEL_COUNT`
-- `HEADLESS`
-- `SCREEN_WIDTH`
-- `SCREEN_HEIGHT`
-- `CHROME_BIN`
-- `CHROMEDRIVER_PATH`
-
-### Observacoes importantes
-
-- O modo recomendado no container e `chrome`.
-- A `DriverFactory` aceita o binario do navegador por `CHROME_BIN` ou `CHROMIUM_BIN` e o driver por `CHROMEDRIVER_PATH`, o que permite usar Chromium no Linux do container sem depender apenas de download em tempo de execucao.
-- Sessao grafica em container aqui significa display virtual acessivel por VNC/noVNC. Nao e uma sessao nativa do Windows.
-- Para UI real em Windows 10, continue usando runner `self-hosted` com sessao logada.
-
-## Execucao via GitHub Actions
-
-O projeto possui um workflow versionado em [`.github/workflows/tests-allure-pages.yml`](/C:/Users/admin/IdeaProjects/demo_automacao/.github/workflows/tests-allure-pages.yml) para:
-
-- executar os testes com Maven
-- gerar o relatorio Allure
-- gerar o JavaDoc
-- publicar os artefatos de documentacao no GitHub Pages
-- disponibilizar logs e relatorios como artefatos da execucao
-
-### Pre-requisitos no GitHub
-
-Para a execucao via GitHub Actions funcionar corretamente, o repositorio deve possuir:
-
-- repositorio publicado no GitHub
-- GitHub Actions habilitado em `Settings > Actions`
-- GitHub Pages habilitado em `Settings > Pages`
-- `Source: GitHub Actions` configurado em `Settings > Pages`
-- permissao de escrita em Pages para o workflow
-
-### Como o workflow executa
-
-O workflow executa automaticamente em `push` nas branches:
-
-- `main`
-- `master`
-
-Tambem pode ser executado manualmente pela aba `Actions`, usando `workflow_dispatch`.
-
-### Parametros do workflow manual
-
-Ao executar manualmente pelo GitHub Actions, o workflow permite informar:
-
-- `cucumber_tag`
-Define a TAG a ser executada. Exemplo: `@AGI`, `@E2E`, `@negative`.
-
-- `browser`
-Define o navegador da execucao. Exemplo: `chrome` ou `edge`.
-
-- `parallel_count`
-Define a quantidade de execucoes paralelas do `DataProvider`.
-
-- `execution_mode`
-Define o ambiente de execucao do workflow:
-`github-hosted-docker-gui` para runner Linux hospedado executando a stack Docker com display virtual
-`self-hosted-windows-gui` para runner Windows com sessao grafica ativa
-
-### Comando executado no pipeline
-
-O job de testes executa a suite com base neste comando:
+Na raiz do projeto:
 
 ```bash
 docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
 ```
 
-No CI hospedado pelo GitHub, a execucao usa a stack Docker do projeto, que sobe `Xvfb`, `Fluxbox`, `x11vnc` e `noVNC` dentro do container. No modo Windows com interface grafica real, a execucao depende de um runner `self-hosted`.
+Esse comando cria a imagem, sobe a sessao grafica virtual e executa a suite com Maven dentro do container.
 
-### Runner Windows 10 com sessao grafica
+### Parametros padrao usados pelo container
 
-Se voce precisa executar o browser em uma sessao grafica real no Windows 10, o caminho suportado e usar um runner `self-hosted`. GitHub-hosted runners nao oferecem desktop interativo em Windows.
+O servico `automacao-gui` usa por padrao:
 
-Pre-requisitos da maquina:
+- `BROWSER=chrome`
+- `CUCUMBER_TAG=@AGI`
+- `PARALLEL_COUNT=1`
+- `HEADLESS=false`
+- `SCREEN_WIDTH=1920`
+- `SCREEN_HEIGHT=1080`
 
-- Windows 10 com usuario local ou corporativo
-- Sessao do Windows iniciada e mantida ativa durante a execucao
-- Java 17 instalado
-- Maven instalado e disponivel no `PATH`
-- Google Chrome e/ou Microsoft Edge instalados
-- Acesso a internet para o WebDriverManager baixar drivers
+Esses valores podem ser alterados diretamente no `docker-compose.yml` antes da execucao.
 
-Passo a passo:
+### Resultado e evidencias
 
-1. No repositorio GitHub, abra `Settings > Actions > Runners`.
-2. Clique em `New self-hosted runner`.
-3. Selecione `Windows`.
-4. Siga os comandos fornecidos pelo GitHub na maquina Windows 10.
-5. Adicione os labels `self-hosted`, `windows` e `win10-gui` ao runner.
-6. Mantenha a maquina logada com a area de trabalho ativa durante a execucao dos testes.
+Os volumes abaixo sao montados para persistir o resultado fora do container:
 
-Observacoes importantes:
+- `./target:/workspace/target`
+- `./logs:/workspace/logs`
 
-- Evite bloquear a sessao com `Win + L`, pois isso costuma quebrar automacoes com browser visivel.
-- Se a maquina entrar em hibernacao, suspensao ou screensaver agressivo, a execucao pode falhar.
-- Para browser maximizado de forma consistente, o workflow envia `-Dscreen.width=1920` e `-Dscreen.height=1080`, e a `DriverFactory` ainda chama `maximize()`.
+Depois da execucao, consulte:
 
-Como disparar no GitHub Actions:
+- `target/allure-results`
+- `target/surefire-reports`
+- `logs/`
 
-1. Abra `Actions`.
-2. Selecione o workflow `Tests And Allure Pages`.
+### Acesso a interface grafica
+
+Durante a execucao, a sessao grafica pode ser acompanhada por:
+
+- navegador: `http://localhost:6080`
+- cliente VNC: `localhost:5900`
+
+### Observacoes importantes
+
+- O modo suportado no container e `chrome`.
+- O `entrypoint` injeta `CHROME_BIN`, `CHROMIUM_BIN` e `CHROMEDRIVER_PATH` quando necessario.
+- A interface grafica no Docker e um display virtual Linux, nao uma sessao nativa do Windows.
+
+## Execucao via GitHub Actions
+
+O workflow principal do projeto esta em `.github/workflows/tests-allure-pages.yml`.
+
+Ele cobre:
+
+- execucao automatizada dos testes
+- upload dos artefatos de teste
+- geracao do relatorio Allure
+- geracao do JavaDoc
+- publicacao do conteudo no GitHub Pages
+
+### Quando o workflow roda
+
+O workflow e disparado:
+
+- automaticamente em `push` para `main`
+- automaticamente em `push` para `master`
+- manualmente por `workflow_dispatch`
+
+### Modos de execucao disponiveis
+
+No disparo manual, o input `execution_mode` aceita:
+
+- `github-hosted-docker-gui`
+- `self-hosted-windows-gui`
+
+#### `github-hosted-docker-gui`
+
+Executa em `ubuntu-latest` usando a mesma stack Docker do projeto. O job roda:
+
+```bash
+docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
+```
+
+Inputs disponiveis no disparo manual:
+
+- `cucumber_tag` com default `@AGI`
+- `browser` com default `chrome`
+- `parallel_count` com default `2`
+- `execution_mode` com default `github-hosted-docker-gui`
+
+Observacao: no job Docker hospedado, o workflow fixa `HEADLESS=false` e repassa `BROWSER`, `CUCUMBER_TAG` e `PARALLEL_COUNT` como variaveis de ambiente do container.
+
+#### `self-hosted-windows-gui`
+
+Executa em um runner com labels:
+
+- `self-hosted`
+- `windows`
+- `win10-gui`
+
+Esse modo existe para cenarios em que e necessario browser visivel em sessao grafica real do Windows.
+
+Pre-requisitos do runner:
+
+- Windows com sessao interativa ativa
+- Java 17
+- Maven no `PATH`
+- Chrome e/ou Edge instalados
+- acesso a internet para download de drivers
+
+Comando executado nesse modo:
+
+```bash
+mvn clean test -DLOG_LEVEL=INFO -Dcucumber.filter.tags=@AGI -Dbrowser=chrome -Ddataproviderthreadcount=2 -Dscreen.width=1920 -Dscreen.height=1080 -Dheadless=false -Dmaven.clean.failOnError=false
+```
+
+No workflow real, os valores de `@AGI`, `chrome` e `2` sao substituidos pelos inputs recebidos no disparo manual.
+
+### Como rodar manualmente no GitHub
+
+1. Abra a aba `Actions` do repositorio.
+2. Selecione `Tests And Allure Pages`.
 3. Clique em `Run workflow`.
-4. Preencha:
-`execution_mode=self-hosted-windows-gui`
-`browser=chrome` ou `browser=edge`
-`cucumber_tag=@AGI`
-`parallel_count=1` ou outro valor adequado
+4. Preencha `cucumber_tag`, `browser`, `parallel_count` e `execution_mode`.
 5. Execute o workflow.
 
-Recomendacao pratica:
+### Artefatos gerados
 
-- Para validacao funcional e execucao barata, use `github-hosted-docker-gui`.
-- Para casos que realmente exigem janela visivel, foco, rendering grafico ou comportamento especifico de Windows, use `self-hosted-windows-gui`.
-
-### Artefatos publicados pelo GitHub Actions
-
-Ao final da execucao, o workflow publica:
+Ao final dos jobs de teste, o pipeline publica:
 
 - `allure-results`
 - `surefire-reports`
 - `execution-logs`
 
-Os logs podem ser acessados assim:
-
-1. Abra a aba `Actions`
-2. Selecione a execucao desejada
-3. Role ate a secao `Artifacts`
-4. Baixe o artefato `execution-logs`
+Esses artefatos ficam disponiveis na propria execucao do GitHub Actions.
 
 ## GitHub Pages
 
-O workflow prepara o conteudo do GitHub Pages com a seguinte estrutura:
+O job `deploy-pages` publica:
 
-- `README.md` na raiz publicada
-- relatorio Allure em `/report/`
-- JavaDoc em `/javadoc/`
+- `README.md` em `target/pages/README.md`
+- relatorio Allure em `target/pages/reports/`
+- JavaDoc em `target/pages/javadoc/`
+- `index.html` na raiz da publicacao
 
-### Links de acesso no GitHub Pages
+### Observacao sobre a pagina inicial
 
-Substitua `SEU-USUARIO` e `SEU-REPO` pelos valores reais do repositorio:
-
-- Arquivo README publicado:
-  `https://SEU-USUARIO.github.io/SEU-REPO/README.md`
-
-- Relatorio Allure:
-  `https://SEU-USUARIO.github.io/SEU-REPO/report/`
-
-- JavaDoc:
-  `https://SEU-USUARIO.github.io/SEU-REPO/javadoc/`
-
-Observacao importante:
-- a raiz `https://SEU-USUARIO.github.io/SEU-REPO/` publica o arquivo `README.md`, mas o GitHub Pages nao o renderiza automaticamente como pagina inicial
-- para uma home navegavel na raiz, seria necessario publicar um `index.html`
+O `index.html` gerado pelo workflow faz redirecionamento para o README hospedado no repositorio GitHub. Se quiser transformar a raiz do Pages em uma home propria do projeto, ajuste a etapa `Prepare GitHub Pages content` no workflow.
 
 ## Geracao do JavaDoc via Workflow
 
@@ -439,11 +391,11 @@ Use `-Ddataproviderthreadcount=QTDE` para informar quantos cenarios devem rodar 
 - Via configuracao padrao do projeto
 No `pom.xml`, o plugin `maven-surefire-plugin` ja possui a propriedade `dataproviderthreadcount` configurada com valor padrao `2`. Se o parametro nao for informado na linha de comando, esse valor padrao sera utilizado.
 
-Tambem existe configuracao paralela em [`testng.xml`](/C:/Users/admin/IdeaProjects/demo_automacao/testng.xml), com `parallel="tests"` e `thread-count="2"`, que pode ser ajustada conforme a estrategia de execucao desejada.
+Tambem existe configuracao paralela em `testng.xml`, com `parallel="tests"` e `thread-count="2"`, que pode ser ajustada conforme a estrategia de execucao desejada.
 
 ## BDD
 
-Os cenarios existentes no arquivo [`buscaartigosblog.feature`](/C:/Users/admin/IdeaProjects/demo_automacao/src/test/resources/features/buscaartigosblog.feature) cobrem os seguintes comportamentos:
+Os cenarios existentes no arquivo `src/test/resources/features/buscaartigosblog.feature` cobrem os seguintes comportamentos:
 
 - `Busca <Nome do Caso de Teste>`
 Valida a busca positiva via teclado. O usuario informa um termo no campo de pesquisa, pressiona `Enter`, visualiza a lista de artigos e confirma que os resultados correspondem ao termo pesquisado.

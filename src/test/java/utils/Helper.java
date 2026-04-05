@@ -424,7 +424,7 @@ public class Helper {
      */
     public void waitForFullLoad() {
         waitForPageLoaded();
-        waitForAjaxComplete();
+//        waitForAjaxComplete();
         waitForDocumentLoaded();
     }
 

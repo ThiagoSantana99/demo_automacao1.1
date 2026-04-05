@@ -90,6 +90,17 @@ public class DriverFactory {
     }
 
     /**
+     * Ajusta o tamanho da janela sem depender de maximize, que pode falhar em sessoes remotas
+     * do Chrome no Linux/container.
+     *
+     * @param driver instancia ativa do WebDriver
+     * @param screenDimension dimensao desejada para a janela
+     */
+    private static void configureWindow(WebDriver driver, Dimension screenDimension) {
+        driver.manage().window().setSize(screenDimension);
+    }
+
+    /**
      * Cria uma instancia de WebDriver para o navegador informado.
      * <p>
      * Responsabilidades:
@@ -123,8 +134,7 @@ public class DriverFactory {
                     edgeOptions.addArguments("--headless=new");
                 }
                 driver = new EdgeDriver(edgeOptions);
-                driver.manage().window().setSize(screenDimension);
-                driver.manage().window().maximize();
+                configureWindow(driver, screenDimension);
                 return driver;
 
 
@@ -153,8 +163,7 @@ public class DriverFactory {
                     chromeOptions.addArguments("--headless=new");
                 }
                 driver = new ChromeDriver(chromeOptions);
-                driver.manage().window().setSize(screenDimension);
-                driver.manage().window().maximize();
+                configureWindow(driver, screenDimension);
                 driver.manage().deleteAllCookies();
                 return driver;
         }
