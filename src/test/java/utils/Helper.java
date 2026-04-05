@@ -17,6 +17,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Classe Helper para reunir utilitarios de interacao e espera com Selenium.
@@ -523,4 +524,10 @@ public class Helper {
         action.keyDown(Keys.CONTROL).sendKeys(Keys.HOME).keyUp(Keys.CONTROL).perform();
     }
 
+    /**
+     * Reload Page.
+     */
+    public void reloadPage() {
+        driver.get(Objects.requireNonNull(driver.getCurrentUrl()));
+    }
 }

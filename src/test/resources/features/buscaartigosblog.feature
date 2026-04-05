@@ -16,7 +16,7 @@ Feature: Busca de artigos no AgiBlog
       | é case insensitive                     | "PIX"     | PIX       |
       | com espaços extras                     | " pix "   | pix       |
 
-  @negative @regression
+  @E2E @negative @regression
   Scenario Outline: Tentativa de Busca - <Nome do Caso de Teste>
     When o usuário digita "<termo>" no campo de busca
     And pressiona Enter

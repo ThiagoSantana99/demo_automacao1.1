@@ -92,6 +92,7 @@ public class BlogSearchPage extends BasePage {
         try {
             validateSearchResultsPageLoaded(termoBusca);
             helper.scrollIntoView(searchTitle);
+            helper.reloadPage();
             helper.scrollToBottom();
             helper.waitForPageLoaded();
             helper.scrollToTop();
