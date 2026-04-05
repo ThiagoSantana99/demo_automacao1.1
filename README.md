@@ -278,6 +278,7 @@ Durante a execucao, a sessao grafica pode ser acompanhada por:
 - O container suporta `chrome` e `edge`, desde que a imagem Selenium correspondente seja informada em `SELENIUM_IMAGE`.
 - Para `chrome`, o valor padrao e `selenium/standalone-chrome`.
 - Para `edge`, use `selenium/standalone-edge`.
+- O workflow `tests-allure-pages.yml` grava um arquivo `.env` com `BROWSER`, `SELENIUM_IMAGE`, `CUCUMBER_TAG`, `PARALLEL_COUNT` e `HEADLESS` antes de chamar `docker compose`.
 - A interface grafica no Docker e um display virtual Linux, nao uma sessao nativa do Windows.
 
 ## Execucao via GitHub Actions

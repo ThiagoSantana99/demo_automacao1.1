@@ -1,5 +1,8 @@
 name: Generate JavaDoc
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:

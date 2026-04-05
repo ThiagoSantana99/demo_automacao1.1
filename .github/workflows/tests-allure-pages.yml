@@ -52,13 +52,17 @@ jobs:
       - name: Prepare output directories
         run: mkdir -p target logs
 
+      - name: Prepare Docker Compose env file
+        run: |
+          cat > .env <<EOF
+          BROWSER=${{ github.event.inputs.browser || 'chrome' }}
+          SELENIUM_IMAGE=selenium/standalone-${{ github.event.inputs.browser || 'chrome' }}
+          CUCUMBER_TAG=${{ github.event.inputs.cucumber_tag || '@E2E' }}
+          PARALLEL_COUNT=${{ github.event.inputs.parallel_count || '1' }}
+          HEADLESS=false
+          EOF
+
       - name: Run automated tests in Docker GUI stack
-        env:
-          BROWSER: ${{ github.event.inputs.browser || 'chrome' }}
-          SELENIUM_IMAGE: selenium/standalone-${{ github.event.inputs.browser || 'chrome' }}
-          CUCUMBER_TAG: ${{ github.event.inputs.cucumber_tag || '@E2E' }}
-          PARALLEL_COUNT: ${{ github.event.inputs.parallel_count || '1' }}
-          HEADLESS: "false"
         run: docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
 
       - name: Stop Docker GUI stack
