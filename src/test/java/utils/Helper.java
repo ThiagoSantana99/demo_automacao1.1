@@ -504,4 +504,23 @@ public class Helper {
     public void moveScreenTopUI() {
         actions.scrollByAmount(0, 0).perform();
     }
+
+    /**
+     * Move a tela para o fim da pagina.
+     */
+    public void scrollToBottom() {
+        Actions action = new Actions(driver);
+        // Pressiona CTRL, END e depois solta as teclas
+        action.keyDown(Keys.CONTROL).sendKeys(Keys.END).keyUp(Keys.CONTROL).perform();
+    }
+
+    /**
+     * Move a tela para o topo da pagina.
+     */
+    public void scrollToTop() {
+        Actions action = new Actions(driver);
+        // Pressiona CTRL, HOME e depois solta as teclas
+        action.keyDown(Keys.CONTROL).sendKeys(Keys.HOME).keyUp(Keys.CONTROL).perform();
+    }
+
 }

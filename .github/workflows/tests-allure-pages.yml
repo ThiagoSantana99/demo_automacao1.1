@@ -210,12 +210,12 @@ jobs:
           <html lang="pt-BR">
           <head>
               <meta charset="UTF-8">
-              <meta http-equiv="refresh" content="0; url=https://github.com/ThiagoSantana99/demo_automacao/blob/master/README.md">
+              <meta http-equiv="refresh" content="0; url=https://thiagosantana99.github.io/demo_automacao1.1/README.md">
               <title>Redirecting...</title>
           </head>
           <body>
               <p>Redirecionando para o README do projeto...</p>
-              <p><a href="https://github.com/ThiagoSantana99/demo_automacao/blob/master/README.md">Abrir README</a></p>
+              <p><a href="https://thiagosantana99.github.io/demo_automacao1.1/README.md">Abrir README</a></p>
           </body>
           </html>
           EOF

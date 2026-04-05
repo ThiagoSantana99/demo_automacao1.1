@@ -92,7 +92,12 @@ public class BlogSearchPage extends BasePage {
         try {
             validateSearchResultsPageLoaded(termoBusca);
             helper.scrollIntoView(searchTitle);
+            helper.scrollToBottom();
             helper.waitForPageLoaded();
+            helper.scrollToTop();
+            helper.scrollToBottom();
+            helper.waitForPageLoaded();
+            helper.scrollToTop();
             List<WebElement> articles = getArticlesOrThrow();
             List<Article> articlesList = new ArrayList<>();
 

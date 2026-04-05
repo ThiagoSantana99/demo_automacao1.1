@@ -361,6 +361,17 @@ O job `deploy-pages` publica:
 - JavaDoc em `target/pages/javadoc/`
 - `index.html` na raiz da publicacao
 
+### Como acessar
+
+Depois que o workflow `Tests And Allure Pages` concluir com sucesso e o GitHub Pages estiver habilitado em `Settings > Pages` com `Source: GitHub Actions`, os links deste repositorio ficam assim:
+
+- pagina inicial do GitHub Pages: `https://thiagosantana99.github.io/demo_automacao1.1/`
+- README publicado: `https://thiagosantana99.github.io/demo_automacao1.1/README.md`
+- relatorio Allure: `https://thiagosantana99.github.io/demo_automacao1.1/reports/`
+- JavaDoc: `https://thiagosantana99.github.io/demo_automacao1.1/javadoc/`
+
+Se preferir, voce tambem pode acessar o deploy mais recente pela aba `Actions`, abrindo a execucao do workflow e consultando o job `deploy-pages`.
+
 ### Observacao sobre a pagina inicial
 
 O `index.html` gerado pelo workflow faz redirecionamento para o README hospedado no repositorio GitHub. Se quiser transformar a raiz do Pages em uma home propria do projeto, ajuste a etapa `Prepare GitHub Pages content` no workflow.
