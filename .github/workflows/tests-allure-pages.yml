@@ -15,6 +15,10 @@ on:
         description: "Browser da execucao"
         required: false
         default: "chrome"
+        type: choice
+        options:
+          - chrome
+          - edge
       parallel_count:
         description: "Quantidade de threads para o DataProvider"
         required: false
@@ -51,6 +55,7 @@ jobs:
       - name: Run automated tests in Docker GUI stack
         env:
           BROWSER: ${{ github.event.inputs.browser || 'chrome' }}
+          SELENIUM_IMAGE: selenium/standalone-${{ github.event.inputs.browser || 'chrome' }}
           CUCUMBER_TAG: ${{ github.event.inputs.cucumber_tag || '@E2E' }}
           PARALLEL_COUNT: ${{ github.event.inputs.parallel_count || '1' }}
           HEADLESS: "false"

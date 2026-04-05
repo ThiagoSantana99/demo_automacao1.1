@@ -255,6 +255,23 @@ public class BlogSearchPage extends BasePage {
     }
 
     /**
+     * Verifica se algum resultado contem o termo informado.
+     *
+     * @param term termo esperado nos resultados
+     * @return true quando algum resultado contiver o termo
+     */
+    public boolean resultsContainTerm(String term) {
+        List<WebElement> elements = driver.findElements(By.xpath(ARTICLE_TITLE_XPATH));
+        ScreenshotUtil.attachScreenshot("Resultado da Busca");
+        for (WebElement el : elements) {
+            if (el.getText().toLowerCase().contains(term.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Registra evidencias do artigo processado no relatorio Allure.
      * <p>
      * Responsabilidades:
@@ -279,4 +296,5 @@ public class BlogSearchPage extends BasePage {
             helper.scrollToElementPic(article, "Artigo " + articleNumber + " " + title);
         });
     }
+
 }

@@ -1,4 +1,5 @@
-FROM selenium/standalone-chrome
+ARG SELENIUM_IMAGE=selenium/standalone-chrome
+FROM ${SELENIUM_IMAGE}
 
 USER root
 

@@ -111,7 +111,7 @@ public class blogSearchSteps {
     @Then("os resultados devem incluir conteúdos de {string}")
     public void validarAcentuacao(String termo) {
         Assert.assertTrue(
-                blogPage.resultsContainTerm(termo),
+                BlogSearchPage.resultsContainTerm(termo),
                 "Problema com acentuacao"
         );
     }

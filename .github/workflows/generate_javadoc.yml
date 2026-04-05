@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - master
+  workflow_dispatch:
 
 jobs:
   javadoc:
@@ -25,7 +27,14 @@ jobs:
       - name: Prepare docs folder
         run: |
           mkdir -p public/doc
-          cp -r target/site/apidocs/* public/doc/
+          if [ -d "target/apidocs" ]; then
+            cp -r target/apidocs/. public/doc/
+          elif [ -d "target/site/apidocs" ]; then
+            cp -r target/site/apidocs/. public/doc/
+          else
+            echo "JavaDoc directory not found."
+            exit 1
+          fi
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

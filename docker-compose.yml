@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        SELENIUM_IMAGE: ${SELENIUM_IMAGE:-selenium/standalone-chrome}
     container_name: demo-automacao-gui
     environment:
       BROWSER: ${BROWSER:-chrome}

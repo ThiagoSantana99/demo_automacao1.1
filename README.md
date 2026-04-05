@@ -231,11 +231,11 @@ cd C:\Users\admin\IdeaProjects\demo_automacao1.1
 docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
 ```
 
-Exemplo 2, sobrescrevendo as variaveis de execucao no `cmd`:
+Exemplo 2, executando com `Edge` no `cmd`:
 
 ```cmd
 cd C:\Users\admin\IdeaProjects\demo_automacao1.1
-set CUCUMBER_TAG=@AGI && set BROWSER=chrome && set PARALLEL_COUNT=1 && set HEADLESS=false && docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
+set SELENIUM_IMAGE=selenium/standalone-edge && set BROWSER=edge && set CUCUMBER_TAG=@AGI && set PARALLEL_COUNT=1 && set HEADLESS=false && docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
 ```
 
 Esse comando cria a imagem, sobe a sessao grafica virtual e executa a suite com Maven dentro do container.
@@ -275,8 +275,9 @@ Durante a execucao, a sessao grafica pode ser acompanhada por:
 
 ### Observacoes importantes
 
-- O modo suportado no container e `chrome`.
-- O `entrypoint` injeta `CHROME_BIN`, `CHROMIUM_BIN` e `CHROMEDRIVER_PATH` quando necessario.
+- O container suporta `chrome` e `edge`, desde que a imagem Selenium correspondente seja informada em `SELENIUM_IMAGE`.
+- Para `chrome`, o valor padrao e `selenium/standalone-chrome`.
+- Para `edge`, use `selenium/standalone-edge`.
 - A interface grafica no Docker e um display virtual Linux, nao uma sessao nativa do Windows.
 
 ## Execucao via GitHub Actions
