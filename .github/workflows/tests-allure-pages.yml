@@ -10,7 +10,7 @@ on:
       cucumber_tag:
         description: "Tag do Cucumber para filtrar a execucao"
         required: false
-        default: "@AGI"
+        default: "@E2E"
       browser:
         description: "Browser da execucao"
         required: false
@@ -51,7 +51,7 @@ jobs:
       - name: Run automated tests in Docker GUI stack
         env:
           BROWSER: ${{ github.event.inputs.browser || 'chrome' }}
-          CUCUMBER_TAG: ${{ github.event.inputs.cucumber_tag || '@AGI' }}
+          CUCUMBER_TAG: ${{ github.event.inputs.cucumber_tag || '@E2E' }}
           PARALLEL_COUNT: ${{ github.event.inputs.parallel_count || '1' }}
           HEADLESS: "false"
         run: docker compose up --build --abort-on-container-exit --exit-code-from automacao-gui
