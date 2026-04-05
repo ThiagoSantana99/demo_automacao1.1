@@ -261,6 +261,7 @@ public class BlogSearchPage extends BasePage {
      * @return true quando algum resultado contiver o termo
      */
     public boolean resultsContainTerm(String term) {
+        helper.moveScreenUI();
         List<WebElement> elements = driver.findElements(By.xpath(ARTICLE_TITLE_XPATH));
         ScreenshotUtil.Esperar(500);
         ScreenshotUtil.attachScreenshot("Resultado da Busca");

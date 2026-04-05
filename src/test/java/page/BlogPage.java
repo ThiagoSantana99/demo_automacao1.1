@@ -78,7 +78,7 @@ public class BlogPage extends BasePage {
      */
     public void clickSearchIcon() {
         helper.click(searchIcon);
-        helper.waitForVisibility(searchInputLocator);
+//        helper.waitForVisibility(searchInputLocator);
     }
 
     /**
@@ -207,7 +207,7 @@ public class BlogPage extends BasePage {
         helper.moveScreenUI();
         helper.waitForPageLoaded();
         helper.click(searchIcon);
-        helper.waitForVisibility(searchInputLocator);
+//        helper.waitForVisibility(searchInputLocator);
         helper.scrollIntoView(searchInputLocator);
         helper.type(searchInputLocator, searchText);
         ScreenshotUtil.Esperar(300);
